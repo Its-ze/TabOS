@@ -7,9 +7,10 @@ namespace tabos {
 
 namespace {
 constexpr uint32_t SampleIntervalMs = 80;
-constexpr uint32_t MinRotationIntervalMs = 700;
-constexpr float TiltThresholdG = 0.48f;
-constexpr uint8_t StableSamplesRequired = 3;
+constexpr uint32_t MinRotationIntervalMs = 2200;
+constexpr float LandscapeTiltThresholdG = 0.72f;
+constexpr float AxisMarginG = 0.24f;
+constexpr uint8_t StableSamplesRequired = 8;
 }  // namespace
 
 void MotionManager::begin(Logger& logger) {
@@ -53,6 +54,7 @@ void MotionManager::loop() {
   const uint8_t target = targetRotationFromAccel(data.accel.x, data.accel.y,
                                                  orientation);
   if (orientation == MotionOrientation::Unknown) {
+    _candidateCount = 0;
     return;
   }
   _snapshot.orientation = orientation;
@@ -93,26 +95,17 @@ uint8_t MotionManager::targetRotationFromAccel(float ax, float ay,
                                                MotionOrientation& orientation) const {
   const float absX = fabsf(ax);
   const float absY = fabsf(ay);
-  if (absX < TiltThresholdG && absY < TiltThresholdG) {
+  if (absX < LandscapeTiltThresholdG || absX < absY + AxisMarginG) {
     orientation = MotionOrientation::Unknown;
     return _snapshot.displayRotation;
   }
 
-  if (absX >= absY) {
-    if (ax >= 0.0f) {
-      orientation = MotionOrientation::Landscape;
-      return 1;
-    }
-    orientation = MotionOrientation::LandscapeFlip;
-    return 3;
+  if (ax >= 0.0f) {
+    orientation = MotionOrientation::Landscape;
+    return 1;
   }
-
-  if (ay >= 0.0f) {
-    orientation = MotionOrientation::Portrait;
-    return 0;
-  }
-  orientation = MotionOrientation::PortraitFlip;
-  return 2;
+  orientation = MotionOrientation::LandscapeFlip;
+  return 3;
 }
 
 const char* MotionManager::orientationName(MotionOrientation orientation) {
