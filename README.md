@@ -12,6 +12,8 @@ Milestone 5 firmware scaffold for a MeshCore-style, touch-first handheld field O
 - Persistent settings using ESP32 Preferences/NVS.
 - Ring-buffer logger with on-device Logs app.
 - Battery monitor using M5Unified power APIs.
+- Base-system IMU/gyro sampling with visible gyro readings in Sensors.
+- Launcher auto-rotation using the Tab5 accelerometer, with a Settings/Quick Settings toggle.
 - Auto dim, auto screen off, wake-on-touch, and stay-awake-while-externally-powered behavior.
 - HAL wrappers for display, touch, and battery access.
 - Wi-Fi manager with radio toggle and async scan results.
@@ -219,10 +221,11 @@ Global variables use 50300 bytes (15%) of dynamic memory, leaving 277380 bytes f
 
 ## Test checklist
 
-- Device shows the TabOS `0.5.1-m5` splash screen on boot.
+- Device shows the TabOS `0.5.2-m5` splash screen on boot.
 - Launcher appears after splash.
 - Launcher has Core, IT Tools, Hardware, System, and Utilities pages.
 - Swiping launcher pages uses a quick directional wipe instead of a full-screen blink.
+- Launcher auto-flips when rotating the Tab5 if Auto rotate is enabled.
 - Utilities page shows Notes, Tasks, Timer, Stopwatch, Flashlight, and Macro.
 - Notes app creates saved local notes and can delete the last note.
 - Tasks app creates saved local tasks, toggles completion by row, and clears completed tasks.
@@ -237,7 +240,7 @@ Global variables use 50300 bytes (15%) of dynamic memory, leaving 277380 bytes f
 - GPIO Arm enables simulated GPIO changes for 15 seconds.
 - GPIO mode/value taps are blocked when not armed and logged.
 - Relay ON/OFF changes relay state and logs action.
-- Sensors app shows temperature, humidity, light, voltage, motion, and update time.
+- Sensors app shows temperature, humidity, light, voltage, gyro, and rotation state.
 - Screen stays awake while external USB power is present.
 - Screen dims and turns off after configured idle timeout when external power is not present.
 - Touch wakes the screen without launching an app on the same touch.

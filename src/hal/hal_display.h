@@ -26,6 +26,8 @@ class HalDisplay {
 
   void setBrightness(uint8_t brightness);
   uint8_t brightness() const { return _brightness; }
+  void setRotation(uint8_t rotation);
+  uint8_t rotation() const { return _rotation; }
 
   void fillScreen(uint32_t color);
   void fillRect(int32_t x, int32_t y, int32_t w, int32_t h, uint32_t color);
@@ -44,6 +46,7 @@ class HalDisplay {
   int16_t _width = 0;
   int16_t _height = 0;
   uint8_t _brightness = 192;
+  uint8_t _rotation = 0;
 };
 
 HalDisplay& display();

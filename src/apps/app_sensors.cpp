@@ -8,7 +8,8 @@
 
 namespace tabos {
 
-SensorsApp::SensorsApp(HardwareManager& hardware) : _hardware(hardware) {}
+SensorsApp::SensorsApp(HardwareManager& hardware, MotionManager& motion)
+    : _hardware(hardware), _motion(motion) {}
 
 void SensorsApp::draw() {
   HalDisplay& d = display();
@@ -30,9 +31,17 @@ void SensorsApp::draw() {
   drawMetric(2, "Light", value);
   snprintf(value, sizeof(value), "%.2f V", s.voltage);
   drawMetric(3, "Voltage", value);
-  drawMetric(4, "Motion", s.motion ? "Yes" : "No");
-  snprintf(value, sizeof(value), "%lus", static_cast<unsigned long>(s.updatedAt));
-  drawMetric(5, "Updated", value);
+  if (_motion.available()) {
+    const MotionSnapshot& motion = _motion.snapshot();
+    snprintf(value, sizeof(value), "%.0f %.0f %.0f", motion.gyroX,
+             motion.gyroY, motion.gyroZ);
+    drawMetric(4, "Gyro dps", value);
+    drawMetric(5, "Rotation",
+               MotionManager::orientationName(motion.orientation));
+  } else {
+    drawMetric(4, "Gyro dps", "No IMU");
+    drawMetric(5, "Rotation", "Unavailable");
+  }
 
   d.fillRoundRect(w - 184, bottom - 60, 154, 44, 6, theme::Panel);
   d.drawRoundRect(w - 184, bottom - 60, 154, 44, 6, theme::Border);
