@@ -109,13 +109,7 @@ void System::loop() {
 
   if (!_power.isScreenOff()) {
     uint8_t rotation = display().rotation();
-    if (_settings.data().autoRotate && _apps.isLauncherActive() &&
-        _motion.consumeRotationChange(rotation) &&
-        rotation != display().rotation()) {
-      display().setRotation(rotation);
-      display().fillScreen(theme::Background);
-      _ui.requestRedraw();
-    }
+    _motion.consumeRotationChange(rotation);
     _ui.loop();
   }
 

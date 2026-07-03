@@ -75,8 +75,7 @@ void QuickSettings::draw() {
   drawToggle(2, "Brightness", brightness, true);
   drawToggle(3, "Saver", _settings->data().batterySaver ? "On" : "Off",
              _settings->data().batterySaver);
-  drawToggle(4, "Rotate", _settings->data().autoRotate ? "Auto" : "Lock",
-             _settings->data().autoRotate);
+  drawToggle(4, "Rotate", "Locked", false);
   drawToggle(5, "Close", "Hide", false);
 }
 
@@ -147,7 +146,7 @@ void QuickSettings::handleToggle(uint8_t index) {
       _settings->save();
       break;
     case 4:
-      s.autoRotate = !s.autoRotate;
+      s.autoRotate = false;
       _settings->save();
       break;
     case 5:
