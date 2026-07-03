@@ -1,0 +1,16 @@
+.DS_Store
+Thumbs.db
+
+# Arduino and editor build artifacts
+build/
+*.elf
+*.bin
+*.map
+*.hex
+*.eep
+*.lst
+*.tmp
+
+# Local editor state
+.vscode/
+.idea/
