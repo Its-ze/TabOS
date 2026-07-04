@@ -24,6 +24,7 @@ struct MotionSnapshot {
   float gyroX = 0.0f;
   float gyroY = 0.0f;
   float gyroZ = 0.0f;
+  float flatYawDeg = 0.0f;
   uint8_t displayRotation = 1;
   MotionOrientation orientation = MotionOrientation::Unknown;
 };
@@ -47,6 +48,11 @@ class MotionManager {
  private:
   uint8_t targetRotationFromAccel(float ax, float ay,
                                   MotionOrientation& orientation) const;
+  bool targetRotationFromFlatGyro(float az, float gz, float dtSeconds,
+                                  uint8_t& rotation,
+                                  MotionOrientation& orientation);
+  MotionOrientation orientationForRotation(uint8_t rotation) const;
+  uint8_t oppositeRotation(uint8_t rotation) const;
 
   MotionSnapshot _snapshot;
   Logger* _logger = nullptr;

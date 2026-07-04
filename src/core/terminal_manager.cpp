@@ -105,8 +105,9 @@ void TerminalManager::handleCommand(const char* command) {
       snprintf(line, sizeof(line), "A %.2f %.2f %.2f G %.0f %.0f %.0f",
                m.accelX, m.accelY, m.accelZ, m.gyroX, m.gyroY, m.gyroZ);
       printLine(line);
-      snprintf(line, sizeof(line), "orientation:%s updated:%lus",
+      snprintf(line, sizeof(line), "orientation:%s yaw:%.0f updated:%lus",
                MotionManager::orientationName(m.orientation),
+               m.flatYawDeg,
                static_cast<unsigned long>(m.updatedAt / 1000));
       printLine(line);
     }

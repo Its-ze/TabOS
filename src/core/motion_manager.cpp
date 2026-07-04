@@ -10,6 +10,9 @@ constexpr uint32_t SampleIntervalMs = 100;
 constexpr uint32_t MinRotationIntervalMs = 1800;
 constexpr float TiltThresholdG = 0.52f;
 constexpr float AxisMarginG = 0.08f;
+constexpr float FlatZThresholdG = 0.82f;
+constexpr float GyroNoiseDps = 8.0f;
+constexpr float GyroFlatFlipDeg = 115.0f;
 constexpr uint8_t StableSamplesRequired = 5;
 }
 
@@ -34,7 +37,8 @@ void MotionManager::loop() {
   }
 
   const uint32_t now = millis();
-  if (now - _lastSampleMs < SampleIntervalMs) {
+  const uint32_t elapsedMs = now - _lastSampleMs;
+  if (elapsedMs < SampleIntervalMs) {
     return;
   }
   _lastSampleMs = now;
@@ -54,13 +58,22 @@ void MotionManager::loop() {
   _snapshot.gyroZ = data.gyro.z;
 
   MotionOrientation orientation = _snapshot.orientation;
-  const uint8_t target = targetRotationFromAccel(data.accel.x, data.accel.y,
-                                                 orientation);
+  uint8_t target = targetRotationFromAccel(data.accel.x, data.accel.y,
+                                           orientation);
+  if (orientation == MotionOrientation::Unknown &&
+      targetRotationFromFlatGyro(data.accel.z, data.gyro.z,
+                                 elapsedMs / 1000.0f, target,
+                                 orientation)) {
+    _candidateRotation = target;
+    _candidateCount = StableSamplesRequired;
+  }
+
   if (orientation == MotionOrientation::Unknown) {
     _candidateCount = 0;
     _snapshot.orientation = orientation;
     return;
   }
+  _snapshot.flatYawDeg = 0.0f;
   _snapshot.orientation = orientation;
 
   if (target != _candidateRotation) {
@@ -124,6 +137,48 @@ uint8_t MotionManager::targetRotationFromAccel(float ax, float ay,
 
   orientation = MotionOrientation::Unknown;
   return _snapshot.displayRotation;
+}
+
+bool MotionManager::targetRotationFromFlatGyro(float az, float gz, float dtSeconds,
+                                               uint8_t& rotation,
+                                               MotionOrientation& orientation) {
+  if (fabsf(az) < FlatZThresholdG) {
+    _snapshot.flatYawDeg = 0.0f;
+    return false;
+  }
+
+  if (fabsf(gz) > GyroNoiseDps) {
+    _snapshot.flatYawDeg += gz * dtSeconds;
+  } else {
+    _snapshot.flatYawDeg *= 0.94f;
+  }
+
+  if (fabsf(_snapshot.flatYawDeg) < GyroFlatFlipDeg) {
+    return false;
+  }
+
+  rotation = oppositeRotation(_snapshot.displayRotation);
+  orientation = orientationForRotation(rotation);
+  _snapshot.flatYawDeg = 0.0f;
+  return true;
+}
+
+MotionOrientation MotionManager::orientationForRotation(uint8_t rotation) const {
+  switch (rotation & 0x03) {
+    case 0:
+      return MotionOrientation::Portrait;
+    case 1:
+      return MotionOrientation::Landscape;
+    case 2:
+      return MotionOrientation::PortraitFlip;
+    case 3:
+    default:
+      return MotionOrientation::LandscapeFlip;
+  }
+}
+
+uint8_t MotionManager::oppositeRotation(uint8_t rotation) const {
+  return (rotation + 2) & 0x03;
 }
 
 const char* MotionManager::orientationName(MotionOrientation orientation) {
