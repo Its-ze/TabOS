@@ -94,7 +94,6 @@ void System::loop() {
   _wifi.loop();
   _bluetooth.loop();
   _mesh.loop();
-  _motion.loop();
   _hardware.loop();
   _utilities.loop();
   _terminal.loop();
@@ -108,8 +107,6 @@ void System::loop() {
   _power.loop(keepAwake, _battery.isExternalPowered());
 
   if (!_power.isScreenOff()) {
-    uint8_t rotation = display().rotation();
-    _motion.consumeRotationChange(rotation);
     _ui.loop();
   }
 
