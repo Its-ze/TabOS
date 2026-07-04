@@ -11,8 +11,8 @@ namespace tabos {
 struct SettingsData {
   uint8_t brightness = 192;
   uint8_t dimBrightness = 42;
-  bool autoDim = false;
-  bool autoScreenOff = false;
+  bool autoDim = true;
+  bool autoScreenOff = true;
   uint32_t dimAfterMs = 15000;
   uint32_t screenOffAfterMs = 60000;
   bool keepAwakeWhileCharging = true;

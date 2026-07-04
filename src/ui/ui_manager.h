@@ -26,8 +26,18 @@ class UiManager {
   void requestRedraw() { _dirty = true; }
 
  private:
+  enum class Transition : uint8_t {
+    None,
+    SlideLeft,
+    SlideRight,
+    OpenApp,
+    BackHome
+  };
+
   const char* currentTitle() const;
   void handleNav(NavAction action);
+  void startTransition(Transition transition);
+  void playTransition();
 
   AppManager* _apps = nullptr;
   SettingsManager* _settings = nullptr;
@@ -38,6 +48,7 @@ class UiManager {
   Launcher _launcher;
   QuickSettings _quickSettings;
   bool _dirty = true;
+  Transition _transition = Transition::None;
   uint32_t _lastStatusDraw = 0;
 };
 
