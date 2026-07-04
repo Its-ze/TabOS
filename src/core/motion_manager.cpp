@@ -6,14 +6,14 @@
 namespace tabos {
 
 namespace {
-constexpr uint32_t SampleIntervalMs = 100;
-constexpr uint32_t MinRotationIntervalMs = 1800;
-constexpr float TiltThresholdG = 0.52f;
-constexpr float AxisMarginG = 0.08f;
+constexpr uint32_t SampleIntervalMs = 60;
+constexpr uint32_t MinRotationIntervalMs = 850;
+constexpr float TiltThresholdG = 0.38f;
+constexpr float AxisMarginG = 0.03f;
 constexpr float FlatZThresholdG = 0.82f;
-constexpr float GyroNoiseDps = 8.0f;
-constexpr float GyroFlatFlipDeg = 115.0f;
-constexpr uint8_t StableSamplesRequired = 5;
+constexpr float GyroNoiseDps = 4.0f;
+constexpr float GyroFlatFlipDeg = 70.0f;
+constexpr uint8_t StableSamplesRequired = 3;
 }
 
 void MotionManager::begin(Logger& logger) {
@@ -119,20 +119,20 @@ uint8_t MotionManager::targetRotationFromAccel(float ax, float ay,
 
   if (absX >= absY + AxisMarginG) {
     if (ax >= 0.0f) {
-      orientation = MotionOrientation::Landscape;
-      return 1;
-    }
-    orientation = MotionOrientation::LandscapeFlip;
-    return 3;
-  }
-
-  if (absY >= absX + AxisMarginG) {
-    if (ay >= 0.0f) {
       orientation = MotionOrientation::Portrait;
       return 0;
     }
     orientation = MotionOrientation::PortraitFlip;
     return 2;
+  }
+
+  if (absY >= absX + AxisMarginG) {
+    if (ay >= 0.0f) {
+      orientation = MotionOrientation::Landscape;
+      return 1;
+    }
+    orientation = MotionOrientation::LandscapeFlip;
+    return 3;
   }
 
   orientation = MotionOrientation::Unknown;
