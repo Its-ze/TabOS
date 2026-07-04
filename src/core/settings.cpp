@@ -5,7 +5,7 @@
 namespace tabos {
 
 namespace {
-constexpr uint32_t SettingsSchema = 4;
+constexpr uint32_t SettingsSchema = 3;
 }
 
 bool SettingsManager::begin(Logger& logger) {

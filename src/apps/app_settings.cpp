@@ -35,7 +35,7 @@ void SettingsApp::draw() {
   drawRow(1, "Auto dim", s.autoDim ? "On" : "Off", false);
   drawRow(2, "Screen off", s.autoScreenOff ? "On" : "Off", false);
   drawRow(3, "Battery saver", s.batterySaver ? "On" : "Off", false);
-  drawRow(4, "Auto rotate", "Disabled", false);
+  drawRow(4, "Auto rotate", s.autoRotate ? "On" : "Off", false);
   drawRow(5, "Reset defaults", "Tap to reset", false);
 }
 
@@ -68,7 +68,7 @@ void SettingsApp::handleInput(const InputEvent& event) {
       _settings.save();
       break;
     case 4:
-      s.autoRotate = false;
+      s.autoRotate = !s.autoRotate;
       _settings.save();
       break;
     case 5:
