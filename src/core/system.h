@@ -32,7 +32,6 @@
 #include "hardware_manager.h"
 #include "logger.h"
 #include "mesh_manager.h"
-#include "motion_manager.h"
 #include "power_manager.h"
 #include "settings.h"
 #include "terminal_manager.h"
@@ -51,7 +50,6 @@ class System {
   Logger& logger() { return _logger; }
   SettingsManager& settings() { return _settings; }
   AppManager& apps() { return _apps; }
-  MotionManager& motion() { return _motion; }
 
  private:
   System();
@@ -64,7 +62,6 @@ class System {
   WifiManager _wifi;
   BluetoothManager _bluetooth;
   MeshManager _mesh;
-  MotionManager _motion;
   HardwareManager _hardware;
   UtilityManager _utilities;
   TerminalManager _terminal;

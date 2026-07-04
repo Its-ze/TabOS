@@ -1,14 +1,13 @@
 #pragma once
 
 #include "../core/hardware_manager.h"
-#include "../core/motion_manager.h"
 #include "app_base.h"
 
 namespace tabos {
 
 class SensorsApp : public AppBase {
  public:
-  SensorsApp(HardwareManager& hardware, MotionManager& motion);
+  explicit SensorsApp(HardwareManager& hardware);
 
   const char* id() const override { return "sensors"; }
   const char* name() const override { return "Sensors"; }
@@ -20,7 +19,6 @@ class SensorsApp : public AppBase {
   void drawMetric(uint8_t index, const char* label, const char* value);
 
   HardwareManager& _hardware;
-  MotionManager& _motion;
 };
 
 }  // namespace tabos

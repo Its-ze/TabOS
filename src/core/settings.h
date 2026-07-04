@@ -18,7 +18,6 @@ struct SettingsData {
   bool keepAwakeWhileCharging = true;
   bool allowAppsKeepAwake = true;
   bool batterySaver = false;
-  bool autoRotate = true;
   bool wifiEnabled = false;
   bool bluetoothEnabled = false;
   char deviceName[20] = TABOS_NAME;

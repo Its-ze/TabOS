@@ -75,8 +75,8 @@ void QuickSettings::draw() {
   drawToggle(2, "Brightness", brightness, true);
   drawToggle(3, "Saver", _settings->data().batterySaver ? "On" : "Off",
              _settings->data().batterySaver);
-  drawToggle(4, "Rotate", _settings->data().autoRotate ? "Auto" : "Lock",
-             _settings->data().autoRotate);
+  drawToggle(4, "Keep Awake", _settings->data().autoScreenOff ? "Off" : "On",
+             !_settings->data().autoScreenOff);
   drawToggle(5, "Close", "Hide", false);
 }
 
@@ -147,7 +147,7 @@ void QuickSettings::handleToggle(uint8_t index) {
       _settings->save();
       break;
     case 4:
-      s.autoRotate = !s.autoRotate;
+      s.autoScreenOff = !s.autoScreenOff;
       _settings->save();
       break;
     case 5:

@@ -17,14 +17,12 @@ bool HalDisplay::begin(Logger& logger) {
   M5.Power.begin();
 
   if (M5.Display.width() < M5.Display.height()) {
-    setRotation(1);
-  } else {
-    _rotation = M5.Display.getRotation();
-    _width = M5.Display.width();
-    _height = M5.Display.height();
+    M5.Display.setRotation(1);
   }
 
   M5.Display.setTextWrap(false);
+  _width = M5.Display.width();
+  _height = M5.Display.height();
   setBrightness(_brightness);
   fillScreen(0x000000);
 
@@ -39,13 +37,6 @@ void HalDisplay::update() {
 void HalDisplay::setBrightness(uint8_t brightness) {
   _brightness = brightness;
   M5.Display.setBrightness(brightness);
-}
-
-void HalDisplay::setRotation(uint8_t rotation) {
-  _rotation = rotation & 3;
-  M5.Display.setRotation(_rotation);
-  _width = M5.Display.width();
-  _height = M5.Display.height();
 }
 
 void HalDisplay::fillScreen(uint32_t color) {
