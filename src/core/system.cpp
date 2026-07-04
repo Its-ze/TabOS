@@ -64,6 +64,7 @@ void System::begin() {
   _utilities.begin(_logger);
   _terminal.begin(_logger);
   _terminal.attachMesh(_mesh);
+  _terminal.attachMotion(_motion);
   _power.begin(_settings, _logger);
   _apps.begin(_logger);
   registerApps();
@@ -109,7 +110,7 @@ void System::loop() {
 
   if (!_power.isScreenOff()) {
     uint8_t rotation = display().rotation();
-    if (_settings.data().autoRotate && _apps.isLauncherActive() &&
+    if (_settings.data().autoRotate &&
         _motion.consumeRotationChange(rotation) &&
         rotation != display().rotation()) {
       display().setRotation(rotation);

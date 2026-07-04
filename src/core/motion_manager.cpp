@@ -6,15 +6,18 @@
 namespace tabos {
 
 namespace {
-constexpr uint32_t SampleIntervalMs = 120;
-constexpr uint32_t MinRotationIntervalMs = 3000;
-constexpr float LandscapeTiltThresholdG = 0.76f;
-constexpr float AxisMarginG = 0.30f;
-constexpr uint8_t StableSamplesRequired = 10;
+constexpr uint32_t SampleIntervalMs = 100;
+constexpr uint32_t MinRotationIntervalMs = 1800;
+constexpr float TiltThresholdG = 0.52f;
+constexpr float AxisMarginG = 0.08f;
+constexpr uint8_t StableSamplesRequired = 5;
 }
 
 void MotionManager::begin(Logger& logger) {
   _logger = &logger;
+  if (!M5.Imu.isEnabled() && M5.In_I2C.isEnabled()) {
+    M5.Imu.begin(&M5.In_I2C, M5.getBoard());
+  }
   _snapshot.available = M5.Imu.isEnabled();
   if (_snapshot.available) {
     _snapshot.displayRotation = 1;
@@ -96,23 +99,41 @@ uint8_t MotionManager::targetRotationFromAccel(float ax, float ay,
                                                MotionOrientation& orientation) const {
   const float absX = fabsf(ax);
   const float absY = fabsf(ay);
-  if (absX < LandscapeTiltThresholdG || absX < absY + AxisMarginG) {
+  if (absX < TiltThresholdG && absY < TiltThresholdG) {
     orientation = MotionOrientation::Unknown;
     return _snapshot.displayRotation;
   }
 
-  if (ax >= 0.0f) {
-    orientation = MotionOrientation::Landscape;
-    return 1;
+  if (absX >= absY + AxisMarginG) {
+    if (ax >= 0.0f) {
+      orientation = MotionOrientation::Landscape;
+      return 1;
+    }
+    orientation = MotionOrientation::LandscapeFlip;
+    return 3;
   }
-  orientation = MotionOrientation::LandscapeFlip;
-  return 3;
+
+  if (absY >= absX + AxisMarginG) {
+    if (ay >= 0.0f) {
+      orientation = MotionOrientation::Portrait;
+      return 0;
+    }
+    orientation = MotionOrientation::PortraitFlip;
+    return 2;
+  }
+
+  orientation = MotionOrientation::Unknown;
+  return _snapshot.displayRotation;
 }
 
 const char* MotionManager::orientationName(MotionOrientation orientation) {
   switch (orientation) {
+    case MotionOrientation::Portrait:
+      return "portrait";
     case MotionOrientation::Landscape:
       return "landscape";
+    case MotionOrientation::PortraitFlip:
+      return "portrait flip";
     case MotionOrientation::LandscapeFlip:
       return "landscape flip";
     case MotionOrientation::Unknown:

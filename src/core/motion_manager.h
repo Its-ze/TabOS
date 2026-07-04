@@ -9,7 +9,9 @@ namespace tabos {
 
 enum class MotionOrientation : uint8_t {
   Unknown,
+  Portrait,
   Landscape,
+  PortraitFlip,
   LandscapeFlip
 };
 
@@ -33,14 +35,18 @@ class MotionManager {
 
   bool available() const { return _snapshot.available; }
   const MotionSnapshot& snapshot() const { return _snapshot; }
+  uint8_t candidateRotation() const { return _candidateRotation; }
+  uint8_t stableSampleCount() const { return _candidateCount; }
+  bool rotationPending() const { return _rotationPending; }
   bool consumeRotationChange(uint8_t& rotation);
 
   static const char* orientationName(MotionOrientation orientation);
 
+  const char* imuName() const;
+
  private:
   uint8_t targetRotationFromAccel(float ax, float ay,
                                   MotionOrientation& orientation) const;
-  const char* imuName() const;
 
   MotionSnapshot _snapshot;
   Logger* _logger = nullptr;

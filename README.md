@@ -218,7 +218,7 @@ Global variables use 50700 bytes (15%) of dynamic memory, leaving 276980 bytes f
 
 ## Test checklist
 
-- Device shows the TabOS `0.5.8-m5` splash screen on boot.
+- Device shows the TabOS `0.5.9-m5` splash screen on boot.
 - Launcher appears after splash.
 - Launcher has Core, IT Tools, Hardware, System, and Utilities pages.
 - Utilities page shows Notes, Tasks, Timer, Stopwatch, Flashlight, and Macro.

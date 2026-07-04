@@ -1,6 +1,7 @@
 #include "terminal_manager.h"
 
 #include "mesh_manager.h"
+#include "motion_manager.h"
 
 #include <string.h>
 #include <strings.h>
@@ -17,6 +18,10 @@ void TerminalManager::begin(Logger& logger) {
 
 void TerminalManager::attachMesh(MeshManager& mesh) {
   _mesh = &mesh;
+}
+
+void TerminalManager::attachMotion(MotionManager& motion) {
+  _motion = &motion;
 }
 
 void TerminalManager::loop() {
@@ -79,12 +84,32 @@ void TerminalManager::handleCommand(const char* command) {
   if (_mesh != nullptr && _mesh->handleTextLine(command)) {
     printLine("Mesh command accepted");
   } else if (strcasecmp(command, "help") == 0) {
-    printLine("help, status, version, clear, logs");
+    printLine("help, status, version, motion, clear, logs");
     printLine("mesh connect, mesh demo, mesh msg text");
   } else if (strcasecmp(command, "status") == 0) {
     printLine("UI alive; touch and background tasks running");
   } else if (strcasecmp(command, "version") == 0) {
     printLine(TABOS_VERSION);
+  } else if (strcasecmp(command, "motion") == 0) {
+    if (_motion == nullptr) {
+      printLine("Motion manager not attached");
+    } else {
+      const MotionSnapshot& m = _motion->snapshot();
+      char line[112];
+      snprintf(line, sizeof(line), "IMU:%s type:%s rot:%u target:%u stable:%u pending:%s",
+               m.available ? "yes" : "no", _motion->imuName(),
+               m.displayRotation, _motion->candidateRotation(),
+               _motion->stableSampleCount(),
+               _motion->rotationPending() ? "yes" : "no");
+      printLine(line);
+      snprintf(line, sizeof(line), "A %.2f %.2f %.2f G %.0f %.0f %.0f",
+               m.accelX, m.accelY, m.accelZ, m.gyroX, m.gyroY, m.gyroZ);
+      printLine(line);
+      snprintf(line, sizeof(line), "orientation:%s updated:%lus",
+               MotionManager::orientationName(m.orientation),
+               static_cast<unsigned long>(m.updatedAt / 1000));
+      printLine(line);
+    }
   } else if (strcasecmp(command, "clear") == 0) {
     clear();
     printLine("Terminal cleared");
