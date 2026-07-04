@@ -18,7 +18,6 @@ Milestone 5 firmware scaffold for a MeshCore-style, touch-first handheld field O
 - Bluetooth manager with BLE scan support when the board package/runtime supports BLE.
 - Terminal manager with USB serial command input and on-device terminal view.
 - Swipe-down quick settings shade with large toggles.
-- Directional launcher/app transitions to avoid a hard full-screen blink when switching pages.
 - Mesh manager with connection state, node database, message list, and packet log.
 - Mesh, Nodes, Messages, and Packet Log apps.
 - Hardware manager with safe stub state for Atom, IR, GPIO, Relay, LED, and Sensors.
@@ -219,10 +218,9 @@ Global variables use 50300 bytes (15%) of dynamic memory, leaving 277380 bytes f
 
 ## Test checklist
 
-- Device shows the TabOS `0.5.1-m5` splash screen on boot.
+- Device shows the TabOS `0.5.0-m5` splash screen on boot.
 - Launcher appears after splash.
 - Launcher has Core, IT Tools, Hardware, System, and Utilities pages.
-- Swiping launcher pages uses a quick directional wipe instead of a full-screen blink.
 - Utilities page shows Notes, Tasks, Timer, Stopwatch, Flashlight, and Macro.
 - Notes app creates saved local notes and can delete the last note.
 - Tasks app creates saved local tasks, toggles completion by row, and clears completed tasks.
