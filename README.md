@@ -212,13 +212,13 @@ Compiled locally with:
 Compile result:
 
 ```text
-Sketch uses 1102364 bytes (16%) of program storage space. Maximum is 6553600 bytes.
-Global variables use 50300 bytes (15%) of dynamic memory, leaving 277380 bytes for local variables.
+Sketch uses 1111778 bytes (16%) of program storage space. Maximum is 6553600 bytes.
+Global variables use 50700 bytes (15%) of dynamic memory, leaving 276980 bytes for local variables.
 ```
 
 ## Test checklist
 
-- Device shows the TabOS `0.5.7-m5` splash screen on boot.
+- Device shows the TabOS `0.5.8-m5` splash screen on boot.
 - Launcher appears after splash.
 - Launcher has Core, IT Tools, Hardware, System, and Utilities pages.
 - Utilities page shows Notes, Tasks, Timer, Stopwatch, Flashlight, and Macro.

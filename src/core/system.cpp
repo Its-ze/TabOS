@@ -32,7 +32,7 @@ System::System()
       _gpioApp(_hardware),
       _relayApp(_hardware),
       _ledApp(_hardware),
-      _sensorsApp(_hardware),
+      _sensorsApp(_hardware, _motion),
       _logsApp(_logger),
       _storageApp(_utilities),
       _powerApp("power", "Power", "PW", "Power tuning starts with auto dim and screen off."),
@@ -56,6 +56,7 @@ void System::begin() {
   display().setBrightness(_settings.data().brightness);
 
   _battery.begin(_logger);
+  _motion.begin(_logger);
   _wifi.begin(_settings, _logger);
   _bluetooth.begin(_settings, _logger);
   _mesh.begin(_logger);
@@ -93,6 +94,7 @@ void System::loop() {
   _wifi.loop();
   _bluetooth.loop();
   _mesh.loop();
+  _motion.loop();
   _hardware.loop();
   _utilities.loop();
   _terminal.loop();
@@ -106,6 +108,13 @@ void System::loop() {
   _power.loop(keepAwake, _battery.isExternalPowered());
 
   if (!_power.isScreenOff()) {
+    uint8_t rotation = display().rotation();
+    if (_settings.data().autoRotate && _apps.isLauncherActive() &&
+        _motion.consumeRotationChange(rotation) &&
+        rotation != display().rotation()) {
+      display().setRotation(rotation);
+      _ui.requestRedraw();
+    }
     _ui.loop();
   }
 

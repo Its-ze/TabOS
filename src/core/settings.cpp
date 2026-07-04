@@ -5,7 +5,7 @@
 namespace tabos {
 
 namespace {
-constexpr uint32_t SettingsSchema = 2;
+constexpr uint32_t SettingsSchema = 4;
 }
 
 bool SettingsManager::begin(Logger& logger) {
@@ -47,6 +47,7 @@ bool SettingsManager::load() {
   _settings.allowAppsKeepAwake =
       _prefs.getBool("appAwake", _settings.allowAppsKeepAwake);
   _settings.batterySaver = _prefs.getBool("battSaver", _settings.batterySaver);
+  _settings.autoRotate = _prefs.getBool("autoRot", _settings.autoRotate);
   _settings.wifiEnabled = _prefs.getBool("wifi", _settings.wifiEnabled);
   _settings.bluetoothEnabled = _prefs.getBool("ble", _settings.bluetoothEnabled);
   String name = _prefs.getString("name", TABOS_NAME);
@@ -72,6 +73,7 @@ bool SettingsManager::save() {
   _prefs.putBool("chargeAwake", _settings.keepAwakeWhileCharging);
   _prefs.putBool("appAwake", _settings.allowAppsKeepAwake);
   _prefs.putBool("battSaver", _settings.batterySaver);
+  _prefs.putBool("autoRot", _settings.autoRotate);
   _prefs.putBool("wifi", _settings.wifiEnabled);
   _prefs.putBool("ble", _settings.bluetoothEnabled);
   _prefs.putString("name", _settings.deviceName);

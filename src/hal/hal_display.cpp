@@ -6,6 +6,25 @@ namespace tabos {
 
 namespace {
 HalDisplay gDisplay;
+M5Canvas gFrameBuffer(&M5.Display);
+bool gFrameBufferReady = false;
+bool gFrameBufferActive = false;
+bool gDirectFrameActive = false;
+
+lgfx::LovyanGFX& targetDisplay() {
+  if (gFrameBufferActive && gFrameBufferReady) {
+    return gFrameBuffer;
+  }
+  return M5.Display;
+}
+
+bool createFrameBuffer(int16_t width, int16_t height) {
+  gFrameBuffer.deleteSprite();
+  gFrameBuffer.setPsram(true);
+  gFrameBuffer.setColorDepth(16);
+  gFrameBuffer.setTextWrap(false);
+  return gFrameBuffer.createSprite(width, height) != nullptr;
+}
 }
 
 HalDisplay& display() {
@@ -21,12 +40,20 @@ bool HalDisplay::begin(Logger& logger) {
   }
 
   M5.Display.setTextWrap(false);
+  _rotation = M5.Display.getRotation();
   _width = M5.Display.width();
   _height = M5.Display.height();
+  gFrameBufferReady = createFrameBuffer(_width, _height);
   setBrightness(_brightness);
   fillScreen(0x000000);
 
   logger.logf(LogLevel::Info, "Display ready %dx%d", _width, _height);
+  if (gFrameBufferReady) {
+    logger.logf(LogLevel::Info, "Display frame buffer ready: %lu bytes",
+                static_cast<unsigned long>(gFrameBuffer.bufferLength()));
+  } else {
+    logger.warn("Display frame buffer unavailable; drawing direct");
+  }
   return _width > 0 && _height > 0;
 }
 
@@ -39,6 +66,20 @@ void HalDisplay::setBrightness(uint8_t brightness) {
   M5.Display.setBrightness(brightness);
 }
 
+void HalDisplay::setRotation(uint8_t rotation) {
+  rotation &= 0x03;
+  if (rotation == _rotation) {
+    return;
+  }
+
+  M5.Display.setRotation(rotation);
+  M5.Display.setTextWrap(false);
+  _rotation = rotation;
+  _width = M5.Display.width();
+  _height = M5.Display.height();
+  gFrameBufferReady = createFrameBuffer(_width, _height);
+}
+
 void HalDisplay::beginWrite() {
   M5.Display.startWrite();
 }
@@ -47,33 +88,61 @@ void HalDisplay::endWrite() {
   M5.Display.endWrite();
 }
 
+void HalDisplay::beginFrame(uint32_t clearColor) {
+  if (gFrameBufferReady) {
+    gFrameBufferActive = true;
+    gFrameBuffer.startWrite();
+    gFrameBuffer.fillScreen(clearColor);
+    return;
+  }
+
+  gDirectFrameActive = true;
+  M5.Display.startWrite();
+}
+
+void HalDisplay::endFrame() {
+  if (gFrameBufferActive) {
+    gFrameBuffer.endWrite();
+    M5.Display.startWrite();
+    gFrameBuffer.pushSprite(&M5.Display, 0, 0);
+    M5.Display.endWrite();
+    gFrameBufferActive = false;
+    return;
+  }
+
+  if (gDirectFrameActive) {
+    M5.Display.endWrite();
+    gDirectFrameActive = false;
+  }
+}
+
 void HalDisplay::fillScreen(uint32_t color) {
-  M5.Display.fillScreen(color);
+  targetDisplay().fillScreen(color);
 }
 
 void HalDisplay::fillRect(int32_t x, int32_t y, int32_t w, int32_t h,
                           uint32_t color) {
-  M5.Display.fillRect(x, y, w, h, color);
+  targetDisplay().fillRect(x, y, w, h, color);
 }
 
 void HalDisplay::drawRect(int32_t x, int32_t y, int32_t w, int32_t h,
                           uint32_t color) {
-  M5.Display.drawRect(x, y, w, h, color);
+  targetDisplay().drawRect(x, y, w, h, color);
 }
 
 void HalDisplay::fillRoundRect(int32_t x, int32_t y, int32_t w, int32_t h,
                                int32_t radius, uint32_t color) {
-  M5.Display.fillRoundRect(x, y, w, h, radius, color);
+  targetDisplay().fillRoundRect(x, y, w, h, radius, color);
 }
 
 void HalDisplay::drawRoundRect(int32_t x, int32_t y, int32_t w, int32_t h,
                                int32_t radius, uint32_t color) {
-  M5.Display.drawRoundRect(x, y, w, h, radius, color);
+  targetDisplay().drawRoundRect(x, y, w, h, radius, color);
 }
 
 void HalDisplay::drawLine(int32_t x0, int32_t y0, int32_t x1, int32_t y1,
                           uint32_t color) {
-  M5.Display.drawLine(x0, y0, x1, y1, color);
+  targetDisplay().drawLine(x0, y0, x1, y1, color);
 }
 
 void HalDisplay::drawText(const char* text, int32_t x, int32_t y, uint8_t font,
@@ -82,12 +151,13 @@ void HalDisplay::drawText(const char* text, int32_t x, int32_t y, uint8_t font,
     return;
   }
 
-  M5.Display.setTextFont(font);
-  M5.Display.setTextSize(1);
-  M5.Display.setTextColor(fg, bg);
+  lgfx::LovyanGFX& target = targetDisplay();
+  target.setTextFont(font);
+  target.setTextSize(1);
+  target.setTextColor(fg, bg);
 
-  const int32_t textW = M5.Display.textWidth(text);
-  const int32_t textH = M5.Display.fontHeight();
+  const int32_t textW = target.textWidth(text);
+  const int32_t textH = target.fontHeight();
   int32_t drawX = x;
   int32_t drawY = y;
 
@@ -114,8 +184,8 @@ void HalDisplay::drawText(const char* text, int32_t x, int32_t y, uint8_t font,
       break;
   }
 
-  M5.Display.setCursor(drawX, drawY);
-  M5.Display.print(text);
+  target.setCursor(drawX, drawY);
+  target.print(text);
 }
 
 void HalDisplay::drawProgress(int32_t x, int32_t y, int32_t w, int32_t h,

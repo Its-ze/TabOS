@@ -44,7 +44,7 @@ void UiManager::draw() {
     return;
   }
 
-  display().beginWrite();
+  display().beginFrame(theme::Background);
   if (_apps->isLauncherActive()) {
     _launcher.draw(*_apps);
   } else if (_apps->activeApp()) {
@@ -56,7 +56,7 @@ void UiManager::draw() {
   if (_quickSettings.isOpen()) {
     _quickSettings.draw();
   }
-  display().endWrite();
+  display().endFrame();
   _lastStatusDraw = millis();
   _dirty = false;
 }
