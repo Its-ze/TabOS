@@ -3,7 +3,7 @@
 #include <stdint.h>
 
 #define TABOS_NAME "TabOS"
-#define TABOS_VERSION "0.5.6-m5"
+#define TABOS_VERSION "0.5.7-m5"
 #define TABOS_BUILD_DATE __DATE__ " " __TIME__
 
 namespace tabos {

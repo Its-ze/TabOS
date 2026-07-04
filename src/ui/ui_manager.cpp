@@ -28,14 +28,12 @@ void UiManager::loop() {
   }
 
   if (now - _lastStatusDraw >= config::StatusRefreshMs) {
-    if (_apps && !_apps->isLauncherActive()) {
-      draw();
-    } else {
-      _statusBar.draw(*_battery, *_settings, *_mesh, currentTitle());
-      if (_quickSettings.isOpen()) {
-        _quickSettings.draw();
-      }
+    display().beginWrite();
+    _statusBar.draw(*_battery, *_settings, *_mesh, currentTitle());
+    if (_quickSettings.isOpen()) {
+      _quickSettings.draw();
     }
+    display().endWrite();
     _lastStatusDraw = now;
   }
 }
@@ -46,7 +44,7 @@ void UiManager::draw() {
     return;
   }
 
-  display().fillScreen(theme::Background);
+  display().beginWrite();
   if (_apps->isLauncherActive()) {
     _launcher.draw(*_apps);
   } else if (_apps->activeApp()) {
@@ -58,6 +56,7 @@ void UiManager::draw() {
   if (_quickSettings.isOpen()) {
     _quickSettings.draw();
   }
+  display().endWrite();
   _lastStatusDraw = millis();
   _dirty = false;
 }

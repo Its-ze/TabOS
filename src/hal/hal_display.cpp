@@ -39,6 +39,14 @@ void HalDisplay::setBrightness(uint8_t brightness) {
   M5.Display.setBrightness(brightness);
 }
 
+void HalDisplay::beginWrite() {
+  M5.Display.startWrite();
+}
+
+void HalDisplay::endWrite() {
+  M5.Display.endWrite();
+}
+
 void HalDisplay::fillScreen(uint32_t color) {
   M5.Display.fillScreen(color);
 }

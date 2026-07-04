@@ -27,6 +27,8 @@ class HalDisplay {
   void setBrightness(uint8_t brightness);
   uint8_t brightness() const { return _brightness; }
 
+  void beginWrite();
+  void endWrite();
   void fillScreen(uint32_t color);
   void fillRect(int32_t x, int32_t y, int32_t w, int32_t h, uint32_t color);
   void drawRect(int32_t x, int32_t y, int32_t w, int32_t h, uint32_t color);
