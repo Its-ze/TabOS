@@ -212,16 +212,16 @@ Compiled locally with:
 Compile result:
 
 ```text
-Sketch uses 1141892 bytes (17%) of program storage space. Maximum is 6553600 bytes.
+Sketch uses 1146790 bytes (17%) of program storage space. Maximum is 6553600 bytes.
 Global variables use 52160 bytes (15%) of dynamic memory, leaving 275520 bytes for local variables.
 ```
 
 ## Test checklist
 
-- Device shows the TabOS `0.5.12-m5` splash screen on boot.
+- Device shows the TabOS `0.5.13-m5` splash screen on boot.
 - Launcher appears after splash.
 - Launcher has Core, IT Tools, Hardware, System, and Utilities pages.
-- IT Tools page launches real Ping, Port Check, DNS, and QR Code apps instead of placeholder tiles.
+- IT Tools page launches real Ping, Port Check, DNS, and scannable QR Code apps instead of placeholder tiles.
 - System page launches real Power and Developer apps instead of placeholder tiles.
 - Utilities page shows Notes, Tasks, Timer, Stopwatch, Flashlight, and Macro.
 - Notes app creates saved local notes and can delete the last note.

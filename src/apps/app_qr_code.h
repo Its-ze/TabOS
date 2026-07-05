@@ -12,8 +12,7 @@ class QrCodeApp : public AppBase {
   void draw() override;
 
  private:
-  void drawFinder(int16_t x, int16_t y, int16_t scale);
-  void drawMatrix(int16_t x, int16_t y, int16_t scale);
+  void drawMatrix(int16_t x, int16_t y, int16_t scale, const char* payload);
 };
 
 }  // namespace tabos
