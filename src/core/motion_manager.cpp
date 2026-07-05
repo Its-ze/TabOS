@@ -14,6 +14,15 @@ constexpr float FlatZThresholdG = 0.82f;
 constexpr float GyroNoiseDps = 4.0f;
 constexpr float GyroFlatFlipDeg = 70.0f;
 constexpr uint8_t StableSamplesRequired = 3;
+constexpr uint8_t DisplayRotationOffset = 1;
+
+uint8_t displayRotationForPhysical(uint8_t rotation) {
+  return (rotation + DisplayRotationOffset) & 0x03;
+}
+
+uint8_t physicalRotationForDisplay(uint8_t rotation) {
+  return (rotation + 4 - DisplayRotationOffset) & 0x03;
+}
 }
 
 void MotionManager::begin(Logger& logger) {
@@ -120,19 +129,19 @@ uint8_t MotionManager::targetRotationFromAccel(float ax, float ay,
   if (absX >= absY + AxisMarginG) {
     if (ax >= 0.0f) {
       orientation = MotionOrientation::Portrait;
-      return 0;
+      return displayRotationForPhysical(0);
     }
     orientation = MotionOrientation::PortraitFlip;
-    return 2;
+    return displayRotationForPhysical(2);
   }
 
   if (absY >= absX + AxisMarginG) {
     if (ay >= 0.0f) {
       orientation = MotionOrientation::Landscape;
-      return 1;
+      return displayRotationForPhysical(1);
     }
     orientation = MotionOrientation::LandscapeFlip;
-    return 3;
+    return displayRotationForPhysical(3);
   }
 
   orientation = MotionOrientation::Unknown;
@@ -164,7 +173,7 @@ bool MotionManager::targetRotationFromFlatGyro(float az, float gz, float dtSecon
 }
 
 MotionOrientation MotionManager::orientationForRotation(uint8_t rotation) const {
-  switch (rotation & 0x03) {
+  switch (physicalRotationForDisplay(rotation)) {
     case 0:
       return MotionOrientation::Portrait;
     case 1:
