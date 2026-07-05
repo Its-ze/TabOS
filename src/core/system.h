@@ -4,6 +4,7 @@
 #include "../apps/app_atom_control.h"
 #include "../apps/app_battery.h"
 #include "../apps/app_bluetooth.h"
+#include "../apps/app_developer.h"
 #include "../apps/app_gpio.h"
 #include "../apps/app_ir_remote.h"
 #include "../apps/app_led_control.h"
@@ -12,9 +13,12 @@
 #include "../apps/app_macro.h"
 #include "../apps/app_mesh.h"
 #include "../apps/app_messages.h"
+#include "../apps/app_network_tools.h"
 #include "../apps/app_nodes.h"
 #include "../apps/app_notes.h"
 #include "../apps/app_packet_log.h"
+#include "../apps/app_power.h"
+#include "../apps/app_qr_code.h"
 #include "../apps/app_relay.h"
 #include "../apps/app_sensors.h"
 #include "../apps/app_settings.h"
@@ -24,7 +28,6 @@
 #include "../apps/app_terminal.h"
 #include "../apps/app_timer.h"
 #include "../apps/app_wifi.h"
-#include "../apps/placeholder_app.h"
 #include "../ui/ui_manager.h"
 #include "app_manager.h"
 #include "battery.h"
@@ -81,10 +84,10 @@ class System {
 
   WifiApp _wifiApp;
   BluetoothApp _bluetoothApp;
-  PlaceholderApp _pingApp;
-  PlaceholderApp _portCheckApp;
-  PlaceholderApp _dnsApp;
-  PlaceholderApp _qrApp;
+  PingApp _pingApp;
+  PortCheckApp _portCheckApp;
+  DnsApp _dnsApp;
+  QrCodeApp _qrApp;
 
   AtomControlApp _atomApp;
   IrRemoteApp _irApp;
@@ -96,9 +99,9 @@ class System {
   LogsApp _logsApp;
   StorageApp _storageApp;
   AboutApp _aboutApp;
-  PlaceholderApp _powerApp;
+  PowerApp _powerApp;
   PacketLogApp _packetLogApp;
-  PlaceholderApp _developerApp;
+  DeveloperApp _developerApp;
 
   NotesApp _notesApp;
   TasksApp _tasksApp;
